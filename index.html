@@ -96,7 +96,8 @@
     display:flex;flex-direction:column;align-items:center;gap:7px;width:max-content;max-width:94vw}
   .toast{display:flex;align-items:center;gap:9px;background:rgba(5,26,48,.86);border:1.5px solid var(--acc);
     border-radius:999px;padding:7px 16px 7px 11px;box-shadow:0 8px 22px rgba(2,10,22,.5);animation:toast 3.1s ease forwards}
-  .toast i{font-style:normal;font-size:1.1rem;line-height:1;flex:none}
+  .toast i{font-style:normal;font-size:1.1rem;line-height:1;flex:none;
+    font-family:'Segoe UI Symbol','Apple Symbols','Noto Sans Symbols 2',sans-serif}
   .toast .tx{display:flex;flex-direction:column;gap:2px;text-align:left}
   .toast b{display:block;font:900 .74rem/1.15 'Nunito';letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}
   .toast span{display:block;font:700 .7rem/1.15 'Nunito';color:#b9e2f5}
@@ -425,9 +426,9 @@ const ZONES=[
   {name:'Sunlit Shallows', bg:['#2fb3d4','#1690b8','#0c6c9b','#074a76','#053356'],
    acc:'#5fe8ff', ray:.24, fish:.18, weed:'#0a4b6e', glow:0,  glowC:'#5fe8ff', amb:'#d8f6ff', ambAdd:false,
    skins:['#5fe8ff','#8affc1','#ffd166','#ff9ecf','#9de7ff','#ffb38a'], theme:'#1690b8'},
-  {name:'Coral Garden',    bg:['#28a6c4','#1a86ac','#155f8e','#123f66','#0b2647'],
-   acc:'#ff9ecf', ray:.2,  fish:.17, weed:'#0d4463', glow:.16, glowC:'#ff7a6b', amb:'#ffe6f2', ambAdd:false,
-   skins:['#ff9ecf','#ff9f68','#ffd166','#5fe8ff','#ff7a6b','#ffc2a8'], theme:'#1a86ac'},
+  {name:'Coral Garden',    bg:['#3fd0c4','#2ba9a8','#1f7f8d','#1c5570','#152f4d'],
+   acc:'#ff9ecf', ray:.2,  fish:.17, weed:'#16585f', glow:.16, glowC:'#ff7a6b', amb:'#ffe6f2', ambAdd:false,
+   skins:['#ff9ecf','#ff9f68','#ffd166','#5fe8ff','#ff7a6b','#ffc2a8'], theme:'#2ba9a8'},
   {name:'Kelp Forest',     bg:['#1c9a9a','#14807f','#0f6068','#0c4350','#072a33'],
    acc:'#8affc1', ray:.16, fish:.15, weed:'#0a4a44', glow:.14, glowC:'#8affc1', amb:'#dcffe9', ambAdd:false,
    skins:['#8affc1','#c8ff8a','#5fe8ff','#ffd166','#4fdcb0','#a8ffd6'], theme:'#14807f'},
@@ -650,18 +651,18 @@ const GOLDC='#ffd166', ICEC='#9fdcff', BOMBC='#3a4358', SPLITC='#8affc1', ARMORC
 
 /* ================= progressive unlocks ================= */
 const UNLOCKS={
-  2 :['❄','Frost Bubble','pop it to slow time'],
+  2 :['❄️','Frost Bubble','pop it to slow time'],
   3 :['🫧','Cluster Spawns','bubbles arrive in packs'],
-  4 :['◈','Splitter Bubble','bursts into three tiny ones'],
-  5 :['〰','Arc Waves','wide sweeping formations'],
-  6 :['⬢','Armored Bubble','takes two hits to crack'],
-  7 :['↔','Flank Waves','pressure from both sides'],
-  8 :['◉','Whirlpool Bubble','clears everything nearby — even mines'],
-  9 :['↑','Column Rush','vertical chains rise fast'],
-  11:['▦','Wall Waves','find the gap'],
-  13:['✕✕','Mine Pairs','sea mines now travel together'],
-  16:['⚡','Riptide','currents push bubbles sideways'],
-  20:['☠','Trench Pressure','everything, faster, forever']
+  4 :['🧩','Splitter Bubble','bursts into three tiny ones'],
+  5 :['🌊','Arc Waves','wide sweeping formations'],
+  6 :['🛡️','Armored Bubble','takes two hits to crack'],
+  7 :['🔀','Flank Waves','pressure from both sides'],
+  8 :['🌀','Whirlpool Bubble','clears everything nearby — even mines'],
+  9 :['🚀','Column Rush','vertical chains rise fast'],
+  11:['🧱','Wall Waves','find the gap'],
+  13:['💣','Mine Pairs','sea mines now travel together'],
+  16:['💨','Riptide','currents push bubbles sideways'],
+  20:['☠️','Trench Pressure','everything, faster, forever']
 };
 const hasIce=()=>level>=2, hasSplit=()=>level>=4, hasArmor=()=>level>=6, hasVortex=()=>level>=8;
 const hasRiptide=()=>level>=16;
@@ -948,7 +949,7 @@ function levelUp(nl){
   if(nz!==oz){
     applyZone(nz);
     banner(ZONES[nz].name.toUpperCase(),'depth '+depthM()+'m · new waters');
-    sZone(); toast('🌊','Zone '+(nz+1),ZONES[nz].name);
+    sZone(); toast('🧭','Zone '+(nz+1),ZONES[nz].name);
   } else {
     banner('LEVEL '+level);
     sLevel();
