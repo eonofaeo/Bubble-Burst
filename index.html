@@ -146,7 +146,14 @@
   .orb-b{background:radial-gradient(circle at 35% 30%,#59627a,#313a4e 50%,#161c2b);
     box-shadow:inset -4px -5px 8px rgba(0,0,0,.5),0 0 12px rgba(255,90,90,.5)}
   .orb-b::before{display:none}
-  .orb-b::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;color:#ff6b6b;font:900 .85rem 'Nunito'}
+
+  .orb-r{background:radial-gradient(circle at 35% 30%,#fff,#ff70e3 45%,#c93fb1)}
+  .orb-r::after{content:'✧';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:1.1rem;text-shadow:0 0 5px rgba(255,255,255,.9)}
+  .orb-f{background:radial-gradient(circle at 35% 30%,#fff,#80ff52 45%,#47c93f)}
+  .orb-f::after{content:'⚡';position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:.9rem;text-shadow:0 0 5px rgba(255,255,255,.9)}
+  #comboBar{width:100%;height:4px;background:rgba(255,255,255,.2);border-radius:2px;margin-top:4px;overflow:hidden;position:relative}
+  #comboBarFill{height:100%;background:var(--pink);width:0%;transition:width 0.1s linear, background-color 0.2s}
+.orb-b::after{content:'✕';position:absolute;inset:0;display:grid;place-items:center;color:#ff6b6b;font:900 .85rem 'Nunito'}
 
   .btn{font-family:'Titan One';font-weight:400;letter-spacing:.05em;border:none;cursor:pointer;color:#fff;
     border-radius:999px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s,filter .2s}
@@ -223,7 +230,9 @@
 <header id="hud" class="hide">
   <div class="hud-left">
     <div><span class="label">Score</span><span id="score" class="big">0</span></div>
-    <div id="comboBox"><span class="label">Combo</span><span id="comboNum" class="big">×2</span></div>
+    <div id="comboBox"><span class="label">Combo</span><span id="comboNum" class="big">×2</span>
+      <div id="comboBar"><div id="comboBarFill"></div></div>
+    </div>
   </div>
   <div class="hud-right">
     <div><span class="label">Level</span><span id="level" class="big">1</span></div>
@@ -248,7 +257,10 @@
     <div class="chip"><i class="orb orb-n"></i><div><b>Pop 'em</b><span>smaller = faster = more pts</span></div></div>
     <div class="chip"><i class="orb orb-g"></i><div><b>Golden · +75</b><span>may grant an extra heart</span></div></div>
     <div class="chip"><i class="orb orb-i"></i><div><b>Frost</b><span>slows time itself</span></div></div>
-    <div class="chip"><i class="orb orb-b"></i><div><b>Sea Mine</b><span>never pop — costs a heart</span></div></div>
+
+    <div class="chip"><i class="orb orb-r"></i><div><b>Rainbow</b><span>sweeps the screen</span></div></div>
+    <div class="chip"><i class="orb orb-f"></i><div><b>Frenzy</b><span>spawns small bubbles</span></div></div>
+<div class="chip"><i class="orb orb-b"></i><div><b>Sea Mine</b><span>never pop — costs a heart</span></div></div>
   </div>
   <button class="btn btn-big pe" id="playBtn">POP TO START</button>
   <p class="hint">click / tap to pop · P pause · M mute · (psst… the bubbles behind this menu are poppable)</p>
@@ -290,7 +302,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const $=id=>document.getElementById(id);
 
 const cvs=$('game'), ctx=cvs.getContext('2d');
-const scoreEl=$('score'), comboBox=$('comboBox'), comboNum=$('comboNum'), levelEl=$('level'),
+const scoreEl=$('score'), comboBox=$('comboBox'), comboNum=$('comboNum'), comboBarFill=$('comboBarFill'), levelEl=$('level'),
       heartsEl=$('hearts'), hud=$('hud'), bannerEl=$('banner'), flashEl=$('flash'),
       menuOv=$('menuOv'), overOv=$('overOv'), pauseOv=$('pauseOv'),
       bestMenu=$('bestMenu'), finalScoreEl=$('finalScore'), newBestEl=$('newBest'),
@@ -312,6 +324,7 @@ let muted=false;
 
 const SKINS=[{c:'#5fe8ff'},{c:'#ff9ecf'},{c:'#ffd166'},{c:'#8affc1'},{c:'#b28dff'},{c:'#ff9f68'}];
 const GOLD={c:'#ffd166'}, ICE={c:'#9fdcff'}, BOMB={c:'#3a4358'};
+const RAINBOW={c:'#ff70e3'}, FRENZY={c:'#80ff52'};
 
 function resize(){
   DPR=Math.min(2,window.devicePixelRatio||1);
@@ -395,6 +408,7 @@ function updateComboUI(){
     comboBox.classList.add('on');
     comboNum.textContent='×'+mult;
     comboNum.classList.toggle('hot',mult>=4);
+    comboBarFill.style.backgroundColor = mult>=4 ? 'var(--gold)' : 'var(--pink)';
   } else comboBox.classList.remove('on');
 }
 function pulseCombo(){
@@ -405,13 +419,13 @@ function resetCombo(){combo=0;comboT=0;curMult=1;updateComboUI();}
 
 /* ---------- spawning ---------- */
 function spawnBubble(o={}){
-  const tp=o.type||(r=>r<.06?'bomb':r<.12?'gold':r<.175?'ice':'norm')(Math.random());
+  const tp=o.type||(r=>r<.06?'bomb':r<.11?'gold':r<.15?'ice':r<.19?'rainbow':r<.23?'frenzy':'norm')(Math.random());
   const rad=o.r||(tp==='bomb'?rand(26,38):tp==='gold'?rand(20,30):tp==='ice'?rand(22,32):rand(17,46));
   const amp=rand(10,Math.min(34,rad*1.2));
   const bx=o.x!=null?o.x:rand(rad+amp+8,Math.max(rad+amp+9,W-rad-amp-8));
   const sp=rand(42,72)*Math.sqrt(34/rad)*(tp==='bomb'?.72:1)*(state==='play'?speedScale():.55);
   bubbles.push({type:tp,
-    skin:tp==='gold'?GOLD:tp==='ice'?ICE:tp==='bomb'?BOMB:SKINS[(Math.random()*SKINS.length)|0],
+    skin:tp==='gold'?GOLD:tp==='ice'?ICE:tp==='bomb'?BOMB:tp==='rainbow'?RAINBOW:tp==='frenzy'?FRENZY:SKINS[(Math.random()*SKINS.length)|0],
     r:rad,bx,x:bx,y:o.y!=null?o.y:H+rad+12,sp,amp,f:rand(.7,1.8),ph:rand(0,TAU),t:rand(0,10),hover:1});
 }
 function spawnWave(){
@@ -430,13 +444,13 @@ function burst(b){
     parts.push({x:b.x+Math.cos(a)*b.r*.5,y:b.y+Math.sin(a)*b.r*.5,
       vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-50,r:rand(1.8,4.2),
       c:b.type==='bomb'?(Math.random()<.5?'#ff8f6b':'#59627a'):b.skin.c,
-      life:rand(.35,.65),max:.65,g:260,add});
+      life:rand(.35,.65),max:.65,g:260,add, trail:[]});
   }
   rings.push({x:b.x,y:b.y,r0:b.r*.5,max:b.r*2.1,c:b.type==='bomb'?'#ff8f6b':b.skin.c,life:.32,max:.32});
   if(b.type==='gold') for(let i=0;i<10;i++){
     const a=rand(0,TAU), sp=rand(30,130);
     parts.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-30,r:rand(1.2,2.6),
-      c:'#fff7d6',life:rand(.5,.85),max:.85,g:-60,add:true});
+      c:'#fff7d6',life:rand(.5,.85),max:.85,g:-60,add:true, trail:[]});
   }
 }
 function popAt(i){
@@ -457,7 +471,29 @@ function popAt(i){
   if(mult>curMult){curMult=mult;pulseCombo();}
   updateComboUI();
   let pts,col=b.skin.c,txt;
-  if(b.type==='gold'){
+  const comboPraises = ['GOOD!', 'GREAT!', 'AWESOME!', 'UNSTOPPABLE!', 'BURST MASTER!'];
+  if(combo > 0 && combo % 10 === 0) {
+    addText(W/2, H/2, comboPraises[Math.min(4, (combo/10|0)-1)], '#ffd166', 36);
+  }
+
+  if(b.type==='rainbow'){
+    pts=50; sGold(); col='#ff70e3'; txt='SWEEP!';
+    for(let j=bubbles.length-1;j>=0;j--){
+       const o = bubbles[j];
+       if(o.type !== 'bomb'){
+         burst(o); sPop(o.r);
+         if(o.type==='gold' && Math.random()<.18) gainLife(o.x,o.y);
+         score += (o.type==='gold'?75:o.type==='ice'?15:basePts(o.r))*curMult;
+         bubbles.splice(j,1);
+       }
+    }
+  } else if (b.type==='frenzy'){
+    pts=25; sIce(); col='#80ff52'; txt='FRENZY!';
+    for(let k=0; k<8; k++){
+      spawnBubble({r:rand(10,18), x:clamp(b.x+rand(-50,50),30,W-30), y:b.y+rand(-50,50), type:'norm'});
+    }
+  } else if(b.type==='gold'){
+
     pts=75; sGold(); col='#ffd166'; txt='+'+(pts*mult);
     if(Math.random()<.18) gainLife(b.x,b.y);
   } else if(b.type==='ice'){
@@ -564,7 +600,11 @@ function step(dt){
     if(nl>level){level=nl;levelEl.textContent=level;banner('LEVEL '+level);sLevel();}
     spawnT-=dt*1000*ts;
     if(spawnT<=0&&bubbles.length<42){spawnWave();spawnT=spawnGap()*rand(.7,1.3);}
-    if(combo>0){comboT-=dt;if(comboT<=0)resetCombo();}
+    if(combo>0){
+      comboT-=dt;
+      comboBarFill.style.width = (comboT/2.2)*100 + '%';
+      if(comboT<=0)resetCombo();
+    }
   } else if(state==='menu'){
     spawnT-=dt*1000;
     if(spawnT<=0&&bubbles.length<13){spawnBubble({type:Math.random()<.15?'gold':undefined});spawnT=rand(500,950);}
@@ -581,7 +621,13 @@ function step(dt){
       if(state==='play'&&b.type==='norm')escapeMiss(b);
     }
   }
-  for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.life-=dt;if(p.life<=0){parts.splice(i,1);continue;}p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;}
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i];p.life-=dt;
+    if(p.life<=0){parts.splice(i,1);continue;}
+    p.trail.push({x:p.x, y:p.y});
+    if(p.trail.length > 5) p.trail.shift();
+    p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+  }
   for(let i=rings.length-1;i>=0;i--){rings[i].life-=dt;if(rings[i].life<=0)rings.splice(i,1);}
   for(let i=texts.length-1;i>=0;i--){const t=texts[i];t.life-=dt;t.y+=t.vy*dt;if(t.life<=0)texts.splice(i,1);}
 
@@ -609,7 +655,53 @@ function drawBubble(b,t){
   }
   const a1=b.type==='norm'?.5:b.type==='ice'?.68:b.type==='gold'?.75:.85;
   const a2=b.type==='norm'?.13:b.type==='ice'?.28:b.type==='gold'?.32:.5;
-  const g=ctx.createRadialGradient(-rx*.35,-ry*.42,R*.08,0,0,R);
+
+  if(b.type==='rainbow'){
+    const g=ctx.createLinearGradient(-rx,-ry,rx,ry);
+    g.addColorStop(0,'#ff70e3');
+    g.addColorStop(0.33,'#70e3ff');
+    g.addColorStop(0.66,'#e3ff70');
+    g.addColorStop(1,'#ff70e3');
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,TAU); ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle='rgba(255,255,255,0.8)'; ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.beginPath(); ctx.ellipse(-rx*.4,-ry*.48,rx*.2,ry*.1,-.6,0,TAU); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.55)';
+    ctx.beginPath(); ctx.arc(rx*.28,ry*.32,rx*.07,0,TAU); ctx.fill();
+  }
+  else if(b.type==='frenzy'){
+    const a1=.75, a2=.32;
+    const g=ctx.createRadialGradient(-rx*.35,-ry*.42,R*.08,0,0,R);
+    g.addColorStop(0,'rgba(255,255,255,.95)');
+    g.addColorStop(.22,hexA(b.skin.c,a1));
+    g.addColorStop(1,hexA(b.skin.c,a2));
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.ellipse(0,0,rx,ry,0,0,TAU); ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle=hexA(b.skin.c,.55); ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.9)';
+    ctx.beginPath(); ctx.ellipse(-rx*.4,-ry*.48,rx*.2,ry*.1,-.6,0,TAU); ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.55)';
+    ctx.beginPath(); ctx.arc(rx*.28,ry*.32,rx*.07,0,TAU); ctx.fill();
+
+    // Draw lightning bolt
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+    ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.moveTo(rx*0.2, -ry*0.5);
+    ctx.lineTo(-rx*0.4, ry*0.1);
+    ctx.lineTo(-rx*0.1, ry*0.1);
+    ctx.lineTo(-rx*0.2, ry*0.6);
+    ctx.lineTo(rx*0.4, -ry*0.1);
+    ctx.lineTo(rx*0.1, -ry*0.1);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+  else {
+const g=ctx.createRadialGradient(-rx*.35,-ry*.42,R*.08,0,0,R);
   g.addColorStop(0,'rgba(255,255,255,.95)');
   g.addColorStop(.22,hexA(b.skin.c,a1));
   g.addColorStop(1,hexA(b.skin.c,a2));
@@ -623,7 +715,10 @@ function drawBubble(b,t){
   ctx.fillStyle='rgba(255,255,255,.55)';
   ctx.beginPath(); ctx.arc(rx*.28,ry*.32,rx*.07,0,TAU); ctx.fill();
 
+
+  }
   if(b.type==='gold'){
+
     ctx.save(); ctx.rotate(-t*1.4); ctx.globalCompositeOperation='lighter';
     ctx.fillStyle='rgba(255,255,255,.9)';
     const k=ry*.55;
@@ -676,6 +771,17 @@ function render(t){
     if(p.add)ctx.globalCompositeOperation='lighter';
     ctx.fillStyle=p.c;
     ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,TAU);ctx.fill();
+    if(p.trail && p.trail.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(p.trail[0].x, p.trail[0].y);
+      for(let j=1; j<p.trail.length; j++) {
+        ctx.lineTo(p.trail[j].x, p.trail[j].y);
+      }
+      ctx.strokeStyle = p.c;
+      ctx.lineWidth = p.r * 1.5;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+    }
     ctx.globalCompositeOperation='source-over';
   }
   ctx.globalAlpha=1;
