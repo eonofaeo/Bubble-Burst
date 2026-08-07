@@ -1,0 +1,3 @@
+## 2024-05-24 - Missing Keyboard Focus Indicators on Custom Elements
+**Learning:** Custom styled interactive elements like `.btn` and `.icon` in HTML5 games often lack visible focus indicators by default, which harms keyboard accessibility for users relying on keyboard navigation (despite the game supporting keyboard shortcuts).
+**Action:** Add `:focus-visible` styles with a high-contrast outline (`outline: 3px solid #5fe8ff; outline-offset: 4px;`) to custom buttons and icons to ensure keyboard users have a clear visual indicator.
