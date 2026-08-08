@@ -70,8 +70,8 @@
 
   /* ---------- HUD ---------- */
   #hud{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:flex-start;
-    padding:14px 18px;pointer-events:none;transition:opacity .3s,transform .3s}
-  #hud.hide{opacity:0;transform:translateY(-14px);pointer-events:none}
+    padding:14px 18px;pointer-events:none;transition:opacity .3s,transform .3s,visibility .3s}
+  #hud.hide{opacity:0;transform:translateY(-14px);pointer-events:none;visibility:hidden}
   .hud-left{display:flex;gap:26px}
   .hud-right{display:flex;gap:10px;align-items:center}
   .label{display:block;font:800 .6rem/1 'Nunito';letter-spacing:.24em;text-transform:uppercase;color:var(--label);margin-bottom:3px}
@@ -97,6 +97,7 @@
     font-size:1.05rem;color:#dff5ff;background:rgba(6,30,54,.72);border:2px solid rgba(125,234,255,.3);transition:.2s}
   .icon:hover{transform:scale(1.12) rotate(8deg);border-color:#7deaff;box-shadow:0 0 16px rgba(95,232,255,.4)}
   .icon:active{transform:scale(.95)}
+  .icon:focus-visible{outline:3px solid #7deaff;outline-offset:3px}
 
   /* ---------- overlays ---------- */
   .overlay{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -157,6 +158,7 @@
 
   .btn{font-family:'Titan One';font-weight:400;letter-spacing:.05em;border:none;cursor:pointer;color:#fff;
     border-radius:999px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s,filter .2s}
+  .btn:focus-visible{outline:3px solid #7deaff;outline-offset:3px}
   .btn-big{font-size:clamp(1.1rem,3vw,1.45rem);padding:.85em 2.2em;
     background:linear-gradient(180deg,#ff9a6b,#ff5f6b);
     box-shadow:0 7px 0 #b83a50,0 14px 30px rgba(255,95,107,.35)}
@@ -237,8 +239,8 @@
   <div class="hud-right">
     <div><span class="label">Level</span><span id="level" class="big">1</span></div>
     <div id="hearts"></div>
-    <button class="icon" id="pauseBtn" aria-label="Pause">⏸</button>
-    <button class="icon" id="muteBtn" aria-label="Sound">🔊</button>
+    <button class="icon" id="pauseBtn" aria-label="Pause" title="Pause (P)">⏸</button>
+    <button class="icon" id="muteBtn" aria-label="Sound" title="Mute (M)" aria-pressed="false">🔊</button>
   </div>
 </header>
 
@@ -553,7 +555,7 @@ function toMenu(){
 }
 function pauseGame(){if(state!=='play')return;state='pause';pauseOv.classList.remove('hidden');sClick();}
 function resumeGame(){if(state!=='pause')return;state='play';pauseOv.classList.add('hidden');last=performance.now();sClick();}
-function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';if(master)master.gain.value=muted?0:.5;}
+function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';muteBtn.setAttribute('aria-pressed',muted);if(master)master.gain.value=muted?0:.5;}
 
 /* ---------- input ---------- */
 cvs.addEventListener('pointerdown',e=>{
