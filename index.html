@@ -70,8 +70,8 @@
 
   /* ---------- HUD ---------- */
   #hud{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:flex-start;
-    padding:14px 18px;pointer-events:none;transition:opacity .3s,transform .3s}
-  #hud.hide{opacity:0;transform:translateY(-14px);pointer-events:none}
+    padding:14px 18px;pointer-events:none;transition:opacity .3s,transform .3s,visibility .3s}
+  #hud.hide{opacity:0;transform:translateY(-14px);pointer-events:none;visibility:hidden}
   .hud-left{display:flex;gap:26px}
   .hud-right{display:flex;gap:10px;align-items:center}
   .label{display:block;font:800 .6rem/1 'Nunito';letter-spacing:.24em;text-transform:uppercase;color:var(--label);margin-bottom:3px}
@@ -555,7 +555,14 @@ function toMenu(){
 }
 function pauseGame(){if(state!=='play')return;state='pause';pauseOv.classList.remove('hidden');sClick();}
 function resumeGame(){if(state!=='pause')return;state='play';pauseOv.classList.add('hidden');last=performance.now();sClick();}
-function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';if(master)master.gain.value=muted?0:.5;}
+function toggleMute(){
+  muted=!muted;
+  muteBtn.textContent=muted?'🔇':'🔊';
+  muteBtn.setAttribute('aria-label', muted?'Unmute':'Mute');
+  muteBtn.title = muted?'Unmute (M)':'Mute (M)';
+  muteBtn.setAttribute('aria-pressed', muted);
+  if(master)master.gain.value=muted?0:.5;
+}
 
 /* ---------- input ---------- */
 cvs.addEventListener('pointerdown',e=>{
