@@ -240,7 +240,7 @@
     <div><span class="label">Level</span><span id="level" class="big">1</span></div>
     <div id="hearts"></div>
     <button class="icon" id="pauseBtn" aria-label="Pause" title="Pause (P)">⏸</button>
-    <button class="icon" id="muteBtn" aria-label="Sound" title="Mute (M)">🔊</button>
+    <button class="icon" id="muteBtn" aria-label="Mute sound" aria-pressed="false" title="Mute (M)">🔊</button>
   </div>
 </header>
 
@@ -555,7 +555,7 @@ function toMenu(){
 }
 function pauseGame(){if(state!=='play')return;state='pause';pauseOv.classList.remove('hidden');sClick();}
 function resumeGame(){if(state!=='pause')return;state='play';pauseOv.classList.add('hidden');last=performance.now();sClick();}
-function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';if(master)master.gain.value=muted?0:.5;}
+function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';muteBtn.setAttribute('aria-pressed',muted);if(master)master.gain.value=muted?0:.5;}
 
 /* ---------- input ---------- */
 cvs.addEventListener('pointerdown',e=>{
