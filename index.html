@@ -581,6 +581,8 @@ $('pauseMenuBtn').onclick=toMenu;
 muteBtn.onclick=toggleMute;
 
 addEventListener('keydown',e=>{
+  if(document.activeElement?.tagName === 'BUTTON' && (e.code === 'Space' || e.code === 'Enter')) return;
+
   if(e.code==='Space'||e.code==='KeyP'){
     e.preventDefault();
     if(state==='play')pauseGame(); else if(state==='pause')resumeGame(); else startGame();
