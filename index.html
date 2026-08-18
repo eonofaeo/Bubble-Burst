@@ -70,8 +70,8 @@
 
   /* ---------- HUD ---------- */
   #hud{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:flex-start;
-    padding:14px 18px;pointer-events:none;transition:opacity .3s,transform .3s}
-  #hud.hide{opacity:0;transform:translateY(-14px);pointer-events:none}
+    padding:14px 18px;pointer-events:none;transition:opacity .3s,transform .3s,visibility .3s}
+  #hud.hide{opacity:0;visibility:hidden;transform:translateY(-14px);pointer-events:none}
   .hud-left{display:flex;gap:26px}
   .hud-right{display:flex;gap:10px;align-items:center}
   .label{display:block;font:800 .6rem/1 'Nunito';letter-spacing:.24em;text-transform:uppercase;color:var(--label);margin-bottom:3px}
