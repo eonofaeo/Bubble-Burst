@@ -197,11 +197,11 @@
 <div id="scene">
   <div class="rays"><i class="ray"></i><i class="ray"></i><i class="ray"></i><i class="ray"></i><i class="ray"></i></div>
 
-  <svg class="fish f1" viewBox="0 0 64 32"><path d="M4 16 C14 4 34 4 44 12 L60 4 L54 16 L60 28 L44 20 C34 28 14 28 4 16 Z" fill="#032338"/><circle cx="14" cy="14" r="2.4" fill="#0d5d8c"/></svg>
-  <svg class="fish f2" viewBox="0 0 64 32"><g transform="translate(64,0) scale(-1,1)"><path d="M4 16 C14 4 34 4 44 12 L60 4 L54 16 L60 28 L44 20 C34 28 14 28 4 16 Z" fill="#032338"/><circle cx="14" cy="14" r="2.4" fill="#0d5d8c"/></g></svg>
-  <svg class="fish f3" viewBox="0 0 64 32"><path d="M4 16 C14 4 34 4 44 12 L60 4 L54 16 L60 28 L44 20 C34 28 14 28 4 16 Z" fill="#032338"/><circle cx="14" cy="14" r="2.4" fill="#0d5d8c"/></svg>
+  <svg class="fish f1" viewBox="0 0 64 32" aria-hidden="true"><path d="M4 16 C14 4 34 4 44 12 L60 4 L54 16 L60 28 L44 20 C34 28 14 28 4 16 Z" fill="#032338"/><circle cx="14" cy="14" r="2.4" fill="#0d5d8c"/></svg>
+  <svg class="fish f2" viewBox="0 0 64 32" aria-hidden="true"><g transform="translate(64,0) scale(-1,1)"><path d="M4 16 C14 4 34 4 44 12 L60 4 L54 16 L60 28 L44 20 C34 28 14 28 4 16 Z" fill="#032338"/><circle cx="14" cy="14" r="2.4" fill="#0d5d8c"/></g></svg>
+  <svg class="fish f3" viewBox="0 0 64 32" aria-hidden="true"><path d="M4 16 C14 4 34 4 44 12 L60 4 L54 16 L60 28 L44 20 C34 28 14 28 4 16 Z" fill="#032338"/><circle cx="14" cy="14" r="2.4" fill="#0d5d8c"/></svg>
 
-  <svg id="weeds" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax slice">
+  <svg id="weeds" viewBox="0 0 1200 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
     <defs>
       <path id="kelpA" d="M0 0 C-16 -40 14 -75 -8 -118 C-14 -132 4 -138 8 -124 C24 -82 -10 -48 12 0 Z"/>
       <path id="kelpB" d="M0 0 C-12 -30 10 -55 -5 -88 C-9 -98 5 -102 8 -92 C18 -60 -8 -34 10 0 Z"/>
@@ -240,7 +240,7 @@
     <div><span class="label">Level</span><span id="level" class="big">1</span></div>
     <div id="hearts"></div>
     <button class="icon" id="pauseBtn" aria-label="Pause" title="Pause (P)">⏸</button>
-    <button class="icon" id="muteBtn" aria-label="Sound" title="Mute (M)">🔊</button>
+    <button class="icon" id="muteBtn" aria-label="Mute sound" aria-pressed="false" title="Mute (M)">🔊</button>
   </div>
 </header>
 
@@ -394,9 +394,12 @@ const spawnGap=()=>clamp(920-(level-1)*80,320,920);
 
 function renderHearts(gain=-1){
   heartsEl.innerHTML='';
+  heartsEl.setAttribute('role', 'status');
+  heartsEl.setAttribute('aria-label', 'Lives: ' + lives);
   for(let i=0;i<4;i++){
     const s=document.createElement('span');
     s.className='heart'+(i<lives?'':' lost')+(i===gain?' gain':'');
+    s.setAttribute('aria-hidden', 'true');
     s.textContent='♥'; heartsEl.appendChild(s);
   }
 }
@@ -555,7 +558,7 @@ function toMenu(){
 }
 function pauseGame(){if(state!=='play')return;state='pause';pauseOv.classList.remove('hidden');sClick();}
 function resumeGame(){if(state!=='pause')return;state='play';pauseOv.classList.add('hidden');last=performance.now();sClick();}
-function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';if(master)master.gain.value=muted?0:.5;}
+function toggleMute(){muted=!muted;muteBtn.textContent=muted?'🔇':'🔊';muteBtn.setAttribute('aria-pressed',muted);muteBtn.setAttribute('title',muted?'Unmute (M)':'Mute (M)');if(master)master.gain.value=muted?0:.5;}
 
 /* ---------- input ---------- */
 cvs.addEventListener('pointerdown',e=>{
